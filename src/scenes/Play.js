@@ -5,11 +5,16 @@ class Play extends Phaser.Scene {
 
     preload() {
         // load images/tile sprites
-        this.load.image('rocket', './assets/rocket.png');
-        this.load.image('spaceship', './assets/spaceship.png');
-        this.load.image('starfield', './assets/starfield.png');
+        this.load.image('bullet', './assets/bullet.png');
+        this.load.image('sky', './assets/sky.png');
         // load spritesheet
-        this.load.spritesheet('explosion', './assets/explosion.png', {
+        this.load.spritesheet('duck', './assets/duck.png', {
+            frameWidth: 64,
+            frameHeight: 32,
+            startFrame: 0,
+            endFrame: 1
+        });
+        this.load.spritesheet('explosion', './assets/duck_shot.png', {
             frameWidth: 64,
             frameHeight: 32,
             startFrame: 0,
@@ -18,33 +23,33 @@ class Play extends Phaser.Scene {
     }
 
     create() {
-        // place starfield
-        this.starfield = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'starfield').setOrigin(0, 0);
+        // place sky
+        this.starfield = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'sky').setOrigin(0, 0);
         
-        // green UI background
+        // UI background
         this.add.rectangle(0, borderUISize + borderPadding, game.config.width,
-        borderUISize * 2, 0x00FF00).setOrigin(0, 0);
-        // white borders
-        this.add.rectangle(0, 0, game.config.width, borderUISize, 0xFFFFFF).setOrigin
+        borderUISize * 2, 0x87ceeb).setOrigin(0, 0);
+        // borders
+        this.add.rectangle(0, 0, game.config.width, borderUISize, 0x87ceeb).setOrigin
         (0, 0);
         this.add.rectangle(0, game.config.height - borderUISize, game.config.width,
-        borderUISize, 0xFFFFFF).setOrigin(0, 0);
-        this.add.rectangle(0, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin
+        borderUISize, 0x7cfc00).setOrigin(0, 0);
+        this.add.rectangle(0, 0, borderUISize, game.config.height, 0x964B00).setOrigin
         (0, 0);
         this.add.rectangle(game.config.width - borderUISize, 0, borderUISize, game.
-        config.height, 0xFFFFFF).setOrigin(0, 0);
+        config.height, 0x964B00).setOrigin(0, 0);
 
         //add rocket (player 1)
         this.p1Rocket = new Rocket(this, game.config.width/2, game.config.height - 
-        borderUISize -borderPadding, 'rocket').setOrigin(0.5, 0);
+        borderUISize -borderPadding, 'bullet').setOrigin(0.5, 0);
 
         // add spaceship (x3)
         this.ship01 = new Spaceship(this, game.config.width + borderUISize * 6,
-        borderUISize * 4, 'spaceship', 0, 30).setOrigin(0, 0);
+        borderUISize * 4, 'duck', 0, 30).setOrigin(0, 0);
         this.ship02 = new Spaceship(this, game.config.width + borderUISize * 3,
-        borderUISize * 5 + borderPadding * 2, 'spaceship', 0, 20).setOrigin(0, 0);
+        borderUISize * 5 + borderPadding * 2, 'duck', 0, 20).setOrigin(0, 0);
         this.ship03 = new Spaceship(this, game.config.width, borderUISize * 6 +
-        borderPadding * 4, 'spaceship', 0, 10).setOrigin(0, 0);
+        borderPadding * 4, 'duck', 0, 10).setOrigin(0, 0);
 
         // define keys
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
@@ -61,7 +66,22 @@ class Play extends Phaser.Scene {
                 first: 0
             }),
             frameRate: 30
-        })
+        });
+
+        this.anims.create({
+            key: 'fly',
+            frames: this.anims.generateFrameNumbers('duck', {
+                start: 0,
+                end: 1,
+                first: 0
+            }),
+            frameRate: 4,
+            repeat: -1
+        });
+
+        this.ship01.play("fly");
+        this.ship02.play("fly");
+        this.ship03.play("fly");
 
         // initialize score
         this.p1Score = 0;
@@ -70,8 +90,8 @@ class Play extends Phaser.Scene {
         let scoreConfig = {
             fontFamily: 'Courier',
             fontSize: '28px',
-            backgroundColor: '#F3B141',
-            color: '#843605',
+            backgroundColor: '#FFFFFF',
+            color: '#00e1ff',
             align: 'right',
             padding: {
                 top: 5,
